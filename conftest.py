@@ -12,6 +12,7 @@ from praktikum.ingredient_types import INGREDIENT_TYPE_FILLING
 def bun():
     bun = Bun(Data.BUN_NAME,Data.BUN_PRICE)
     return bun
+
 @pytest.fixture
 def ingredient():
     ingredient = Ingredient(INGREDIENT_TYPE_FILLING,Data.INGREDIENT_NAME_1,Data.INGREDIENT_PRICE_1)
@@ -20,9 +21,10 @@ def ingredient():
 @pytest.fixture
 def bun_mock():
     mock_bun = Mock()
-    mock_bun.name = Data.BUN_NAME
-    mock_bun.price = Data.BUN_PRICE
+    mock_bun.get_name.return_value = Data.BUN_NAME
+    mock_bun.get_price.return_value = Data.BUN_PRICE
     return mock_bun
+
 
 @pytest.fixture
 def ingredient_mock():
@@ -31,6 +33,14 @@ def ingredient_mock():
     mock_ingredient.name = Data.INGREDIENT_NAME_1
     mock_ingredient.price = Data.INGREDIENT_PRICE_1
     return mock_ingredient
+
+@pytest.fixture
+def burger_mock():
+    mock_burger = Mock()
+    mock_burger.bun.name = Data.BUN_NAME
+    mock_burger.ingredients = [Data.INGREDIENT_NAME_1,Data.INGREDIENT_NAME_2]
+    return mock_burger
+
 
 @pytest.fixture
 def create_burger_with_3_ingredients(bun_mock, ingredient_mock):
@@ -45,4 +55,5 @@ def create_burger_with_3_ingredients(bun_mock, ingredient_mock):
 def database():
     database = Database()
     return database
+
         

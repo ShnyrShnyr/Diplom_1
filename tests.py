@@ -1,4 +1,6 @@
 from unittest.mock import Mock
+
+from Diplom_1.praktikum.bun import Bun
 from praktikum.burger import Burger
 from praktikum.ingredient import Ingredient
 from praktikum.ingredient_types import INGREDIENT_TYPE_SAUCE, INGREDIENT_TYPE_FILLING
@@ -6,13 +8,30 @@ from data import Data
 import pytest
 
 class TestBun:
-    
-    def test_bun_get_name(self, bun):
-        assert Data.BUN_NAME == bun.get_name(), f'Проверяем, что название булки {Data.BUN_NAME}'
-    def test_bun_get_price(self, bun):
-        assert Data.BUN_PRICE == bun.get_price(), f'Проверяем, что цена булки {Data.BUN_PRICE}'
+
+    def test_bun_name(self, bun_mock):
+        bun = Bun(name=Data.BUN_NAME, price=bun_mock.price)
+        expected = bun.name
+        assert expected == Data.BUN_NAME
+
+    def test_bun_price(self, bun_mock):
+        bun = Bun(name=bun_mock.name, price=Data.BUN_PRICE)
+        expected = bun.price
+        assert expected == Data.BUN_PRICE
+
+
+    def test_bun_get_name(self, bun_mock):
+        bun = Bun(name=bun_mock.name, price=bun_mock.price)
+        expected = bun.get_name()
+        assert expected == bun_mock.name, f'Проверяем, что название булки {bun_mock.name}'
+
+    def test_bun_get_price(self, bun_mock):
+        bun = Bun(name=bun_mock.name, price=bun_mock.price)
+        expected = bun.get_price()
+        assert expected == bun_mock.price, f'Проверяем, что цена булки {Data.BUN_PRICE}'
 
 class TestBurger:
+
     def test_burger_set_buns(self, bun):
         burger = Burger()
         burger.set_buns(bun)
@@ -54,6 +73,7 @@ class TestBurger:
         print(receipt)
         print(receipt_expected)
         assert receipt == receipt_expected
+
 class TestIngredient:
     @pytest.mark.parametrize(
         ['ingredient_type', 'name', 'price'],
@@ -67,10 +87,42 @@ class TestIngredient:
         ingredient = Ingredient(ingredient_type, name, price)
         assert ingredient.get_type() == ingredient_type and ingredient.get_name() == name and ingredient.get_price() == price, f'Проверяем, что тип ингредиента {ingredient_type}, название - {name}, цена - {price} '
 
+    def test_ingredient_get_name(self, ingredient):
+        expected = ingredient.name
+        assert expected == Data.INGREDIENT_NAME_1
 
 class TestDatabase:
     def test_database_available_buns(self, database):
-        assert len(database.available_buns()) == 3, 'Проверяем, что в базе доступно 3 булочки'
+        buns = database.available_buns()
+        assert len(buns) == 3, 'Проверяем, что в базе доступно 3 булочки'
 
     def test_database_available_ingredients(self, database):
-        assert len(database.available_ingredients()) == 6, 'Проверяем, что в базе доступно 6 ингредиентов'
+        ingredients = database.available_ingredients()
+        assert len(ingredients) == 6, 'Проверяем, что в базе доступно 6 ингредиентов'
+
+    def test_available_buns_returns_list_of_bun_instances(self, database):
+        buns = database.available_buns()
+        assert isinstance(buns, list)
+
+    def test_available_buns_expected_values(self, database):
+        names = [bun.name for bun in database.available_buns()]
+        assert names == ["black bun", "white bun", "red bun"]
+
+    def test_available_price_expected_values (self, database):
+
+        prices = [bun.price for bun in database.available_buns()]
+        assert prices == [100, 200, 300]
+
+    def test_available_ingredients_grouped_by_type(self, database):
+        ingredients = database.available_ingredients()
+        sauces = [i for i in ingredients if i.type == INGREDIENT_TYPE_SAUCE]
+        fillings = [i for i in ingredients if i.type == INGREDIENT_TYPE_FILLING]
+
+        assert len(sauces) == 3
+        assert len(fillings) == 3
+
+        sauce_names = sorted(i.name for i in sauces)
+        filling_names = sorted(i.name for i in fillings)
+
+        assert sauce_names == ["chili sauce", "hot sauce", "sour cream"]
+        assert filling_names == ["cutlet", "dinosaur", "sausage"]
