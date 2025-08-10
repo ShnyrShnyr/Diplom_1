@@ -1,12 +1,12 @@
 import pytest
-from data import Data
+from Diplom_1.data import Data
 from unittest.mock import Mock
 
-from praktikum.bun import Bun
-from praktikum.burger import Burger
-from praktikum.database import Database
-from praktikum.ingredient import Ingredient
-from praktikum.ingredient_types import INGREDIENT_TYPE_FILLING
+from Diplom_1.praktikum.bun import Bun
+from Diplom_1.praktikum.burger import Burger
+from Diplom_1.praktikum.database import Database
+from Diplom_1.praktikum.ingredient import Ingredient
+from Diplom_1.praktikum.ingredient_types import INGREDIENT_TYPE_FILLING
 
 @pytest.fixture
 def bun():
@@ -21,8 +21,8 @@ def ingredient():
 @pytest.fixture
 def bun_mock():
     mock_bun = Mock()
-    mock_bun.get_name.return_value = Data.BUN_NAME
-    mock_bun.get_price.return_value = Data.BUN_PRICE
+    mock_bun.name = Data.BUN_NAME
+    mock_bun.price = Data.BUN_PRICE
     return mock_bun
 
 
@@ -35,7 +35,7 @@ def ingredient_mock():
     return mock_ingredient
 
 @pytest.fixture
-def burger_mock():
+def burger_mock(mock_burger):
     mock_burger = Mock()
     mock_burger.bun.name = Data.BUN_NAME
     mock_burger.ingredients = [Data.INGREDIENT_NAME_1,Data.INGREDIENT_NAME_2]
